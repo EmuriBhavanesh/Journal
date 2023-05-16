@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Mood Journal</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/8005/8005831.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <br>
+
+    <body class="bg-light">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col text-right">
+                    <a href="#" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#largeModal">Create your
+                        Mood
+                        Journal</a>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="largeModal" tabindex="-1" role="dialog" aria-labelledby="basicModal"
+            aria-hidden="true">
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Mood Check-In</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{url_for('success')}}" method="post">
+                            <div class="mb-3">
+
+                                <input class="form-control" type="text" placeholder="Enter your Name" name="Fname"
+                                    aria-label="default input example" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea1" class="form-label-sm">What made your mood?</label>
+                                <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example"
+                                    name="dept" required>
+                                    <option value="Education">Education 📚</option>
+                                    <option value="Work">Work  👨‍💻</option>
+                                    <option value="Family">Family 👪</option>
+                                    <option value="Relationship">Relationship 🧑‍🤝‍🧑</option>
+                                    <option value="Food">Food 🍽️</option>
+                                    <option value="Travellling">Travellling 🧳</option>
+                                    <option value="Friends">Friends 🫂</option>
+                                    <option value="Exercise">Exercise 🏋️‍♂️</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label for="exampleFormControlTextarea1" class="form-label-sm">What is in your
+                                    mind?</label>
+                                <textarea required class="form-control" id="exampleFormControlTextarea1" rows="1"
+                                    name="notes"></textarea>
+                            </div>
+                            <div id='input-cont' class="mb-3">
+                                <button class="btn btn-success" onclick='addInput()' type="button">+ Add input</button>
+                                <button class="btn btn-warning" onclick='removeInput()' type="button">- Remove input</button>
+
+                            </div>
+                            <br>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Discard</button>
+                                <button class="btn btn-primary" role="button" type="submit">Save</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <main>
+            <section id="cards">
+                <div class="container py-2">
+                    <div class="row pb-4">
+                        <div class="col-12 text-center">
+                            <div class="display-3">Today's Journal</div>
+                            <br><br>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <br>
+                        {%for i in range(0, len)%}
+                        <div class="col-lg-4 col-md-6 mb-4 pt-5">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-body">
+                                    <div class="user-picture">
+                                        <img src="{{ value[i]['mood'] }}" class="shadow-sm rounded-circle" height="130"
+                                            width="130" />
+                                    </div>
+                                    <br><br>
+                                    <div class="user-content">
+                                        <h3 class="text-capitalize user-name font-weight-bold">{{ value[i]['Name'] }}
+                                        </h3>
+                                        <p class=" text-capitalize text-muted small blockquote-footer">{{
+                                            value[i]['dept'] }}</p>
+                                        <div class="small">
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star text-warning"></i>
+                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                            <i class="fas fa-star text-light"></i>
+                                        </div>
+                                        <p class="text-muted mb-0 font-weight-bold">
+                                            {{ value[i]['notes'] }}</p>
+                                    </div>
+                                    <br>
+                                    <form action="{{url_for('delete')}}" method="post">
+                                        <input hidden class="form-control" type="text" placeholder="Enter your Name"
+                                            name="userId" value="{{value[i]['userId']}}"
+                                            aria-label="default input example">
+
+                                        <button class="btn btn-danger " style="position: absolute;right: 60%;"
+                                            type="submit" name="delete" value="{{value[i]['id']}}">Delete</button>
+                                    </form>
+                                    <form action="{{url_for('update')}}" method="post">
+                                        <input hidden class="form-control" type="text" placeholder="Enter your Name"
+                                            name="id" value="{{value[i]['id']}}" aria-label="default input example">
+                                        <input hidden class="form-control" type="text" placeholder="Enter your Name"
+                                            name="userId" value="{{value[i]['userId']}}"
+                                            aria-label="default input example">
+                                        <button type="submit" style="position: absolute;right: 25%;"
+                                            value="{{value[i]['id']}}" class="btn btn-warning" name="id">Update</button>
+                                    </form>
+                                </div>
+                                <br><br>
+                                <p class="small text-muted mb-0 text-center">
+                                    {{ value[i]['last_updated'] }}</p>
+                                <br>
+                            </div>
+                        </div>
+                        {%endfor%}
+                    </div>
+                </div>
+            </section>
+        </main>
+    </body>
+</body>
+
+</html>
+
+<style>
+    #cards .card {
+        border-radius: 20px;
+        min-height: 100%;
+    }
+
+    #cards .heading-border {
+        position: absolute;
+        width: 100%;
+        top: 60%;
+    }
+
+    #cards .card .user-picture img {
+        position: absolute;
+        top: -10%;
+        right: 10%;
+        
+        padding: 10px;
+    }
+
+    #cards .card .user-content .user-name .text-muted {
+        margin-right: 150px;
+        margin-left: 5%;
+    }
+</style>
+
+<script>
+    const container = document.getElementById('input-cont');
+    var inputCount = 0;
+    let linebreak = document.createElement('br');
+
+    // Call addInput() function on button click
+    function addInput(){
+        inputCount++;
+        if(inputCount>3){
+        alert('You can add maximum 3 input fields.');
+        return;
+    }
+        let input = document.createElement('input');
+        input.placeholder = 'Some important notes';
+        input.name = inputCount;
+        input.id = inputCount
+        input.className = 'form-control';
+        input.style.marginBottom = '10px'
+        input.style.marginTop = '10px'
+        container.appendChild(input);
+        console.log(inputCount)
+        }
+
+    function removeInput(){
+        if(inputCount==0){
+        alert('Please add first');
+        return;
+    }
+        const element = document.getElementById(inputCount);
+        element.remove();
+        inputCount--;
+    }
+</script>
